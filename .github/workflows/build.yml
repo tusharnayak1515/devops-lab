@@ -1,0 +1,68 @@
+name: Build App
+
+on:
+  push:
+    branches: [ main, dev, staging ]
+  pull_request:
+    branches: [ main, dev, staging ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build NPM App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Node.JS
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+      - name: Determine App version
+        id: app-data
+        shell: bash
+        run: |
+          APP_NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          ARTIFACT_NAME="${APP_NAME}-${VERSION}"
+
+          echo "app-name=$APP_NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "artifact-name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+      - name: Install Dependencies
+        id: install-deps
+        shell: bash
+        run: |
+          npm ${{ vars.NPM_INSTALL_COMMAND || 'ci' }}
+      - name: Build
+        id: build
+        shell: bash
+        env:
+          NODE_ENV: ${{ vars.NODE_ENV }}
+        run: |
+          npm run ${{ vars.NPM_BUILD_COMMAND || 'build' }}
+      - name: Test
+        if: ${{ vars.SKIP_TEST != 'true' }}
+        id: test
+        shell: bash
+        env:
+          NODE_ENV: ${{ vars.NODE_ENV }}
+        run: |
+          npm run ${{ vars.NPM_TEST_COMMAND || 'test' }}
+      - name: Prepare artifact folder
+        shell: bash
+        run: |
+          mkdir -p artifact
+          cp -r dist/* artifact/
+          cp package.json artifact/
+          cp package-lock.json artifact/
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.app-data.outputs.artifact-name }}
+          path: artifact
+          retention-days: 1
+    outputs:
+      app-name: ${{ steps.app-data.outputs.app-name }}
+      version: ${{ steps.app-data.outputs.version }}
+      artifact-name: ${{ steps.app-data.outputs.artifact-name }}
