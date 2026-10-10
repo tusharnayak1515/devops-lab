@@ -1,0 +1,28 @@
+{
+  "name": "devops-lab",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "node -e \"require('node:fs').mkdirSync('dist', { recursive: true })\" && npm pack --pack-destination dist",
+    "start": "node index.js",
+    "test": "node -e \"console.log('Dummy test passed')\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tusharnayak1515/devops-lab.git"
+  },
+  "keywords": [
+    "devops"
+  ],
+  "author": "tusharnayak1515",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tusharnayak1515/devops-lab/issues"
+  },
+  "homepage": "https://github.com/tusharnayak1515/devops-lab#readme",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0"
+  }
+}
