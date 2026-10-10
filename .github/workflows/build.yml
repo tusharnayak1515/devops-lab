@@ -57,7 +57,7 @@ jobs:
         run: |
           mkdir -p artifact
           cp -r dist/* artifact/
-          printf 'PORT=%s\n' "$PORT" > artifact/.env
+          printf 'NODE_ENV=%s\nPORT=%s\n' "$NODE_ENV" "$PORT" > artifact/.env
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
