@@ -56,7 +56,10 @@ jobs:
           PORT: ${{ vars.PORT }}
         run: |
           mkdir -p artifact
-          cp -r dist/* artifact/
+          tarball=$(find dist -maxdepth 1 -type f -name '*.tgz' -print -quit)
+          test -n "$tarball"
+          tar -xzf "$tarball" -C artifact --strip-components=1
+          cp package-lock.json artifact/
           printf 'NODE_ENV=%s\nPORT=%s\n' "$NODE_ENV" "$PORT" > artifact/.env
       - name: Upload artifact
         uses: actions/upload-artifact@v4
