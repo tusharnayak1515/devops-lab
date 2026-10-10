@@ -51,9 +51,13 @@ jobs:
           npm run ${{ vars.NPM_TEST_COMMAND || 'test' }}
       - name: Prepare artifact folder
         shell: bash
+        env:
+          NODE_ENV: ${{ vars.NODE_ENV }}
+          PORT: ${{ vars.PORT }}
         run: |
           mkdir -p artifact
           cp -r dist/* artifact/
+          printf 'PORT=%s\n' "$PORT" > artifact/.env
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
