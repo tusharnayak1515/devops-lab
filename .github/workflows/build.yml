@@ -63,6 +63,7 @@ jobs:
         with:
           name: ${{ steps.app-data.outputs.artifact-name }}
           path: artifact
+          include-hidden-files: true
           retention-days: 1
     outputs:
       app-name: ${{ steps.app-data.outputs.app-name }}
